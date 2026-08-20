@@ -1,7 +1,7 @@
 import { type Href } from "expo-router";
 import { PropsWithChildren, type ReactNode } from "react";
 import { ViewProps } from "react-native";
-import { type ImageProps } from "expo-image";
+import { LocalizedTitle } from "./localized.types";
 
 export type ContainerProps = PropsWithChildren<
   {} & ViewProps & {
@@ -16,11 +16,15 @@ export type TitleProps = {
 };
 
 export type CardProps = {
-  coverSource?: ImageProps["source"];
-  discount?: string;
-  title?: string;
+  image?: string;
+  discount?: number;
+  title: string;
   author?: string;
-  rating?: string;
-  reviews?: string;
-  price?: string;
+  rating?: number;
+  reviews?: number;
+  price?: number;
+};
+
+export type BtnProps = {
+  title: string;
 };

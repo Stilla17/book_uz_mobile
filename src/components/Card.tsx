@@ -1,27 +1,27 @@
 import { CardProps } from "@/types/props.types";
 import { Image } from "expo-image";
-import { BookOpen, Eye, Headphones, Heart, Star } from "lucide-react-native";
+import { BookOpen, Eye, Headphones, Bookmark, Star } from "lucide-react-native";
 import { Text, View } from "react-native";
 
 export default function Card({
-  coverSource,
-  discount = "-20%",
-  title = "Joyland",
-  author = "Stiven King",
-  rating = "4.8",
-  reviews = "120",
+  image,
+  discount,
+  title,
+  author,
+  rating,
+  reviews,
 }: CardProps) {
   return (
     <View className="w-full p-4 bg-white rounded-[24px]">
       <View className="flex-row gap-4 relative ">
         <View className="w-full overflow-hidden bg-slate-100">
-          {coverSource ? (
+          {image ? (
             <View
               className="overflow-hidden bg-slate-100"
               style={{ width: "100%", aspectRatio: "0.65" }}
             >
               <Image
-                source={coverSource}
+                source={image}
                 style={{ width: "100%", height: "100%" }}
                 contentFit="cover"
               />
@@ -36,11 +36,15 @@ export default function Card({
           )}
         </View>
 
-        <View className="self-start rounded-xl bg-[#FF5C63] outline-2 outline-red-600 px-2.5 py-1 absolute">
-          <Text className="text-[12px] font-semibold text-white">
-            {discount}
-          </Text>
-        </View>
+        {discount ? (
+          <View className="self-start rounded-xl bg-[#FF5C63] outline-2 outline-red-600 px-2.5 py-1 absolute">
+            <Text className="text-[12px] font-semibold text-white">
+              {discount}
+            </Text>
+          </View>
+        ) : (
+          ""
+        )}
 
         <View
           className="absolute right-0 top-0 h-8 w-8 items-center justify-center rounded-full bg-white"
@@ -52,12 +56,12 @@ export default function Card({
             elevation: 5,
           }}
         >
-          <Heart color="#FF454D" size={18} strokeWidth={2} />
+          <Bookmark color="#FF454D" size={18} strokeWidth={2} />
         </View>
       </View>
 
       {/* <View className="mt-4 mb-2 h-px bg-slate-200" /> */}
-      <View className="flex-1 ">
+      <View className="mt-3">
         <Text
           numberOfLines={1}
           ellipsizeMode="tail"

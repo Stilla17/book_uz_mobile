@@ -1,10 +1,13 @@
 import Container from "@/components/Container";
 import CustomTitle from "@/components/CustomTitle";
-import BookSection from "@/components/sections/BookSection";
+import AuthorSection from "@/components/sections/AuthorSection";
 import CarouselSection from "@/components/sections/CarouselSection";
 import Categories from "@/components/sections/Categories";
 import Navbar from "@/components/sections/Navbar";
+import NewBookSection from "@/components/sections/NewBookSection";
+import PublisherSection from "@/components/sections/PublisherSection";
 import SearchInput from "@/components/sections/SearchInput";
+import ViewBookSection from "@/components/sections/ViewBookSection";
 import { Image } from "expo-image";
 import { StatusBar, StyleSheet, View } from "react-native";
 
@@ -27,11 +30,17 @@ const HomeScreen = () => {
 
           <CustomTitle title="Yangi kitoblar" path="/library" />
 
-          <BookSection />
+          <NewBookSection />
 
           <CustomTitle title="Mashhur kitoblar" path="/library" />
 
-          <BookSection />
+          <ViewBookSection />
+
+          <CustomTitle title="Nashryotlar" path="/library" />
+          <PublisherSection />
+
+          <CustomTitle title="Mualliflar" path="/library" />
+          <AuthorSection />
         </Container>
       </View>
     </View>
