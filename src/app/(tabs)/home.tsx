@@ -21,7 +21,7 @@ const HomeScreen = () => {
           contentPosition="top"
           style={StyleSheet.absoluteFill}
         />
-        <StatusBar barStyle={"light-content"} />
+        <StatusBar barStyle={"dark-content"} />
         <Container fixedHeader={<Navbar />}>
           <SearchInput />
           <CarouselSection />
@@ -32,7 +32,7 @@ const HomeScreen = () => {
 
           <NewBookSection />
 
-          <CustomTitle title="Mashhur kitoblar" path="/library" />
+          <CustomTitle title="Ko'p ko'rilgan kitoblar" path="/library" />
 
           <ViewBookSection />
 

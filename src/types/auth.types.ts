@@ -37,3 +37,19 @@ export type AuthState = {
   setLoading: (value: boolean) => void;
   clearAuth: () => void;
 };
+
+// Auth OTP
+
+export interface SendOtpPayload {
+  phone: string;
+}
+
+export interface VerifyOtpPayload {
+  phone: string;
+  code: string;
+}
+
+export interface SendOtpResponse {
+  message: string;
+  expiresIn: number;
+}

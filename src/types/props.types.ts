@@ -1,12 +1,12 @@
 import { type Href } from "expo-router";
 import { PropsWithChildren, type ReactNode } from "react";
 import { ViewProps } from "react-native";
-import { LocalizedTitle } from "./localized.types";
 
 export type ContainerProps = PropsWithChildren<
   {} & ViewProps & {
       className?: string;
       fixedHeader?: ReactNode;
+      centered?: boolean;
     }
 >;
 
@@ -27,4 +27,8 @@ export type CardProps = {
 
 export type BtnProps = {
   title: string;
+  children?: ReactNode;
+  isActive?: boolean;
+  href?: Href;
+  onPress?: () => void;
 };

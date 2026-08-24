@@ -9,7 +9,8 @@ export function useLogin() {
     mutationFn: authService.login,
     onSuccess: async (data) => {
       await authStorage.saveTokens(data.accessToken, data.refreshToken);
-      setUser(data.user)
+      setUser(data.user);
     },
   });
 }
+

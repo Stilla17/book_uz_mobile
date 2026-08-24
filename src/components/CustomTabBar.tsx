@@ -1,4 +1,6 @@
 import { tabsData } from "@/data/tabMenuData";
+import { useAuthStore } from "@/store/useAuthStore";
+import { router } from "expo-router";
 import type { BottomTabBarProps } from "expo-router/js-tabs";
 import { Pressable, Text, View } from "react-native";
 
@@ -10,6 +12,8 @@ export default function CustomTabBar({
   navigation,
   insets,
 }: BottomTabBarProps) {
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+
   return (
     <View
       className="px-2"
@@ -47,6 +51,11 @@ export default function CustomTabBar({
           const Icon = tab.icon;
 
           const onPress = () => {
+            if (route.name === "profile" && !isAuthenticated) {
+              router.push("/(auth)/auth");
+              return;
+            }
+
             const event = navigation.emit({
               type: "tabPress",
               target: route.key,
@@ -95,7 +104,6 @@ export default function CustomTabBar({
                     }}
                   >
                     <Icon color="white" size={32} strokeWidth={2.2} />
-                   
                   </View>
                 </>
               ) : (

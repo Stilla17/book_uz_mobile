@@ -6,16 +6,22 @@ export default function Container({
   children,
   className,
   fixedHeader,
+  centered = false,
   ...props
 }: ContainerProps) {
   return (
-    <SafeAreaView className="flex-1">
+    <SafeAreaView style={{ flex: 1 }}>
       {fixedHeader ? <View className="w-full px-4">{fixedHeader}</View> : null}
       <ScrollView
-        contentContainerStyle={{ paddingBottom: 120 }}
+        style={{ flex: 1 }}
+        contentContainerStyle={{
+          flexGrow: 1,
+          justifyContent: centered ? "center" : "flex-start",
+          paddingBottom: 120,
+        }}
         showsVerticalScrollIndicator={false}
       >
-        <View className={`${className} w-full px-4`} {...props}>
+        <View className={`${className ?? ""} w-full px-4`} {...props}>
           {children}
         </View>
       </ScrollView>

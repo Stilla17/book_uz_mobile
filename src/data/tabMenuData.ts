@@ -30,7 +30,7 @@ export const tabsData: TabItem[] = [
   },
   {
     name: "profile",
-    title: "Profile",
+    title: "Sahifam",
     icon: CircleUser,
   },
 ];
