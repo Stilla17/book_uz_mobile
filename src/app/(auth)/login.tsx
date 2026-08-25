@@ -1,19 +1,41 @@
 import Container from "@/components/Container";
 import Button from "@/components/other/Button";
+import { useOtp } from "@/hooks/mutations/useOtp";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { ArrowLeft, Phone } from "lucide-react-native";
 import { useState } from "react";
 import {
+  Alert,
   ImageBackground,
   Pressable,
   Text,
   TextInput,
   View,
 } from "react-native";
+import { Controller, useForm } from "react-hook-form";
+import { SendOtpPayload } from "@/types/auth.types";
 
 export default function AuthLogin() {
-  const [phone, setPhone] = useState("");
+  const { control, handleSubmit } = useForm<SendOtpPayload>({
+    defaultValues: {
+      phone: "",
+    },
+  });
+  const sendOtp = useOtp();
+
+  const handleSendOtp = (data: SendOtpPayload) => {
+    const cleanPhone = data.phone.replace(/\D/g, "");
+
+    if (cleanPhone.length !== 9) {
+      Alert.alert("Xato", "Telefon raqamni to'liq kiriting");
+      return;
+    }
+
+    sendOtp.mutate({
+      phone: `+998${cleanPhone}`,
+    });
+  };
 
   return (
     <ImageBackground
@@ -51,18 +73,30 @@ export default function AuthLogin() {
             <View className="ml-[11px] border-r border-[#E8DDD4] pr-3">
               <Text className="text-[15px] font-bold text-[#382319]">+998</Text>
             </View>
-            <TextInput
-              autoComplete="tel"
-              keyboardType="phone-pad"
-              maxLength={9}
-              onChangeText={setPhone}
-              placeholder="90 123 45 67"
-              placeholderTextColor="#A99B90"
-              className="flex-1 px-3 py-[15px] text-base text-[#382319]"
-              value={phone}
+            <Controller
+              control={control}
+              name="phone"
+              rules={{ required: true, minLength: 9 }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  autoComplete="tel"
+                  keyboardType="phone-pad"
+                  maxLength={9}
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  placeholder="90 123 45 67"
+                  placeholderTextColor="#A99B90"
+                  className="flex-1 px-3 py-[15px] text-base text-[#382319]"
+                  value={value}
+                />
+              )}
             />
           </View>
-          <Button title="Kirish" isActive={false} href={"/(auth)/otp"}>
+          <Button
+            title={sendOtp.isPending ? "Yuborilmoqda..." : "Kirish"}
+            isActive={false}
+            onPress={handleSubmit(handleSendOtp)}
+          >
             {""}
           </Button>
         </View>

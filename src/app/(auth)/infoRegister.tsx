@@ -12,14 +12,13 @@ import {
 } from "lucide-react-native";
 import { ReactNode, useState } from "react";
 import {
+  ImageBackground,
   Pressable,
   Text,
   TextInput,
   TextInputProps,
   View,
-  ImageBackground,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 type FormFieldProps = TextInputProps & {
   icon: ReactNode;

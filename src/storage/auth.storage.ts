@@ -5,11 +5,14 @@ const REFRESH_TOKEN_KEY = "refresh_token";
 
 export const authStorage = {
   // Tokenni saqlash
-  saveTokens: async (accesToken: string, refreshToken: string) => {
-    await Promise.all([
-      SecureStore.setItemAsync(ACCESS_TOKEN_KEY, accesToken),
-      SecureStore.setItemAsync(REFRESH_TOKEN_KEY, refreshToken),
-    ]);
+  saveTokens: async (accessToken: string, refreshToken?: string) => {
+    await SecureStore.setItemAsync(ACCESS_TOKEN_KEY, accessToken);
+
+    if (refreshToken) {
+      await SecureStore.setItemAsync(REFRESH_TOKEN_KEY, refreshToken);
+    } else {
+      await SecureStore.deleteItemAsync(REFRESH_TOKEN_KEY);
+    }
   },
   // Tokenni olib kelmoqdamiz
   getAccessToken: async () => {

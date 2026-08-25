@@ -25,7 +25,7 @@ export interface AuthToken {
 export interface AuthResponse {
   user: User;
   accessToken: string;
-  refreshToken: string;
+  refreshToken?: string;
 }
 
 export type AuthState = {
@@ -46,10 +46,18 @@ export interface SendOtpPayload {
 
 export interface VerifyOtpPayload {
   phone: string;
-  code: string;
+  otp: string;
 }
 
 export interface SendOtpResponse {
   message: string;
   expiresIn: number;
 }
+
+export type ApiErrorResponse = {
+  message?: string;
+};
+
+export type OtpFormValues = {
+  code: string[];
+};

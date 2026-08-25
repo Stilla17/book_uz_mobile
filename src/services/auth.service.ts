@@ -30,8 +30,23 @@ export const authService = {
     return response.data.data;
   },
   // sms code ni tasdiqlash uchun api
-  verifyOtp: async (payload: VerifyOtpPayload) => {
+  verifyOtp: async (payload: VerifyOtpPayload): Promise<AuthResponse> => {
     const response = await api.post("/auth/phone/verify-otp", payload);
-    return response.data.data;
+    const data = response.data?.data ?? response.data;
+
+    return {
+      ...data,
+      accessToken: data.accessToken ?? data.token,
+    };
+  },
+  getProfile: async () => {
+    const response = await api.get("/users/profile");
+
+    return (
+      response.data?.data?.user ??
+      response.data?.data ??
+      response.data?.user ??
+      response.data
+    );
   },
 };
