@@ -12,7 +12,7 @@ export default function Card({
   reviews,
 }: CardProps) {
   return (
-    <View className="w-full p-4 bg-white rounded-[24px]">
+    <View className="w-full p-4 bg-white rounded-3xl">
       <View className="flex-row gap-4 relative ">
         <View className="w-full overflow-hidden bg-slate-100">
           {image ? (

@@ -1,10 +1,11 @@
 import Container from "@/components/Container";
 import Button from "@/components/other/Button";
 import { useOtp } from "@/hooks/mutations/useOtp";
+import { SendOtpPayload } from "@/types/auth.types";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { ArrowLeft, Phone } from "lucide-react-native";
-import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import {
   Alert,
   ImageBackground,
@@ -13,8 +14,6 @@ import {
   TextInput,
   View,
 } from "react-native";
-import { Controller, useForm } from "react-hook-form";
-import { SendOtpPayload } from "@/types/auth.types";
 
 export default function AuthLogin() {
   const { control, handleSubmit } = useForm<SendOtpPayload>({
@@ -51,7 +50,12 @@ export default function AuthLogin() {
             accessibilityRole="button"
             hitSlop={10}
             onPress={() => router.back()}
-            className="h-[42px] w-[42px] items-center justify-center rounded-[14px] border border-[rgba(255,255,255,0.15)] bg-[#f88000] active:opacity-70"
+            style={{
+              boxShadow:
+                "inset 0 -2px 2px rgba(56, 35, 25, 0.45), inset 0 30px 40px rgba(255,255,255,0.35), 0 4px 5px rgba(0,0,0,0.35)",
+            }}
+            className="h-[42px] w-[42px] items-center justify-center rounded-[14px] border 
+            border-[rgba(255,255,255,0.15)]  bg-[#FF7900] shadow-xl"
           >
             <ArrowLeft color="white" size={22} />
           </Pressable>

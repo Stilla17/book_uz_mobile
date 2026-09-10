@@ -1,52 +1,136 @@
 import Container from "@/components/Container";
 import Button from "@/components/other/Button";
-import { Link, router } from "expo-router";
+import FormField from "@/components/other/FormField";
+import LocationSelectModal from "@/components/other/LocationSelectModal";
+import { useCompleteRegistration } from "@/hooks/mutations/useCompleteRegistration";
+import { useDistricts, useRegions } from "@/hooks/queries/useLocation";
+import { useAuthStore } from "@/store/useAuthStore";
+import { InfoRegistrationForm } from "@/types/location.types";
+import DateTimePicker from "@expo/ui/community/datetime-picker";
+import { Image } from "expo-image";
+import { Redirect } from "expo-router";
 import {
-  ArrowLeft,
-  ArrowRight,
-  Building2,
   CalendarDays,
-  MapPin,
+  ChevronDown,
   Phone,
   UserRound,
 } from "lucide-react-native";
-import { ReactNode, useState } from "react";
+import { useState } from "react";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import {
+  Alert,
   ImageBackground,
   Pressable,
   Text,
   TextInput,
-  TextInputProps,
   View,
 } from "react-native";
 
-type FormFieldProps = TextInputProps & {
-  icon: ReactNode;
-  label: string;
-};
-
-function FormField({ icon, label, ...props }: FormFieldProps) {
-  return (
-    <View className="mb-[17px] flex-1">
-      <Text className="mb-2 text-[13px] font-bold text-[#554137]">{label}</Text>
-      <View className="min-h-14 flex-row items-center rounded-2xl border-[1.5px] border-[#E6D7CA] bg-white px-[15px]">
-        {icon}
-        <TextInput
-          placeholderTextColor="#A99B90"
-          className="flex-1 px-[11px] py-3.5 text-[15px] text-[#382319]"
-          {...props}
-        />
-      </View>
-    </View>
-  );
-}
-
 export default function AuthRegister() {
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [birthdate, setBirthdate] = useState("");
-  const [region, setRegion] = useState("");
-  const [district, setDistrict] = useState("");
+  const pendingRegistration = useAuthStore(
+    (state) => state.pendingRegistration,
+  );
+  const initialPhone =
+    pendingRegistration?.profile.phone?.replace(/^\+998/, "") ?? "";
+
+  const {
+    control,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm<InfoRegistrationForm>({
+    mode: "onTouched",
+    defaultValues: {
+      name: pendingRegistration?.profile.name ?? "",
+      phone: initialPhone,
+      birthdate: "",
+      region: "",
+      district: "",
+    },
+  });
+
+  const completeRegistration = useCompleteRegistration();
+  const selectedRegionId = useWatch({
+    control,
+    name: "region",
+  });
+  const selectedDistrictId = useWatch({
+    control,
+    name: "district",
+  });
+  const [regionModalVisible, setRegionModalVisible] = useState(false);
+  const [districtModalVisible, setDistrictModalVisible] = useState(false);
+  const [datePickerVisible, setDatePickerVisible] = useState(false);
+
+  const { data: regions = [], isLoading: regionsLoading } = useRegions();
+  const { data: districts = [], isLoading: districtsLoading } =
+    useDistricts(selectedRegionId);
+  const selectedRegion = regions.find(
+    (region) => region.id === selectedRegionId,
+  );
+  const selectedDistrict = districts.find(
+    (district) => district.id === selectedDistrictId,
+  );
+
+  const selectRegion = (regionId: string) => {
+    setValue("region", regionId, {
+      shouldValidate: true,
+    });
+
+    // Region o'zgarsa oldingi district tozalanadi
+    setValue("district", "", {
+      shouldValidate: true,
+    });
+  };
+
+  if (!pendingRegistration) {
+    return <Redirect href="/(auth)/auth" />;
+  }
+
+  const handleRegister = (values: InfoRegistrationForm) => {
+    if (!pendingRegistration) {
+      Alert.alert(
+        "Test rejimi",
+        "UI ochildi, lekin registrationToken yo'qligi sabab formani yuborib bo'lmaydi",
+      );
+      return;
+    }
+
+    const selectedRegion = regions.find(
+      (region) => region.id === values.region,
+    );
+
+    const selectedDistrict = districts.find(
+      (district) => district.id === values.district,
+    );
+
+    if (!selectedRegion || !selectedDistrict) {
+      Alert.alert("Xato", "Viloyat va tumanni tanlang");
+      return;
+    }
+
+    const cleanPhone = values.phone.replace(/\D/g, "");
+    completeRegistration.mutate({
+      registrationToken: pendingRegistration!.registrationToken,
+      name: values.name.trim(),
+      phone: `+998${cleanPhone}`,
+      birthDate: values.birthdate,
+      region: selectedRegion.name.uz,
+      district: selectedDistrict.name.uz,
+    });
+  };
+
+  const handleInvalid = () => {
+    const message =
+      errors.name?.message ||
+      errors.phone?.message ||
+      errors.birthdate?.message ||
+      errors.region?.message ||
+      errors.district?.message ||
+      "Maydonlarni to'g'ri to'ldiring";
+
+    Alert.alert("Xato", message);
+  };
 
   return (
     <ImageBackground
@@ -56,26 +140,44 @@ export default function AuthRegister() {
     >
       <Container>
         <View className="mt-6 ">
-          <View className="relative  shrink-0 overflow-hidden px-6 pb-7 ">
-            <Pressable
-              accessibilityLabel="Orqaga qaytish"
-              accessibilityRole="button"
-              hitSlop={10}
-              onPress={() => router.back()}
-              className="h-[42px] w-[42px] items-center justify-center rounded-[14px] border border-[rgba(255,255,255,0.15)] bg-[#f88000] active:opacity-70"
-            >
-              <ArrowLeft color="white" size={22} />
-            </Pressable>
+          <View className="items-center">
+            <Image
+              source={require("./../../../assets/logo_book_uz.png")}
+              contentFit="contain"
+              style={{ width: 250, height: 160 }}
+            />
+            <Text className="text-[#A05A27] font-bold mt-2 mb-4">
+              Kitob — eng yaxshi sovg'a
+            </Text>
           </View>
 
-          <FormField
-            autoCapitalize="words"
-            autoComplete="name"
-            icon={<UserRound color="#A05A27" size={20} />}
-            label="Ism va familiya"
-            onChangeText={setName}
-            placeholder="Masalan, Aziz Karimov"
-            value={name}
+          <Text className="my-4 text-[24px] text-[#A05A27] font-bold text-center">
+            So'rovnoma
+          </Text>
+
+          {/* Name */}
+          <Controller
+            control={control}
+            name="name"
+            rules={{
+              required: "Ism va familiya kiriting",
+              minLength: {
+                value: 2,
+                message: "Ism kamida 2 ta belgidan iborat bo'lishi kerak",
+              },
+            }}
+            render={({ field: { value, onChange, onBlur } }) => (
+              <FormField
+                autoCapitalize="words"
+                autoComplete="name"
+                icon={<UserRound color="#A05A27" size={20} />}
+                label="Ism va familiya"
+                onBlur={onBlur}
+                onChangeText={onChange}
+                placeholder="Masalan, Aziz Karimov"
+                value={value}
+              />
+            )}
           />
 
           <View className="mb-[17px]">
@@ -87,60 +189,211 @@ export default function AuthRegister() {
               <View className="ml-2.5 border-r border-[#E8DDD4] pr-[11px]">
                 <Text className="text-sm font-bold text-[#382319]">+998</Text>
               </View>
-              <TextInput
-                autoComplete="tel"
-                keyboardType="phone-pad"
-                maxLength={9}
-                onChangeText={setPhone}
-                placeholder="90 123 45 67"
-                placeholderTextColor="#A99B90"
-                className="flex-1 px-[11px] py-3.5 text-[15px] text-[#382319]"
-                value={phone}
+
+              {/* Phone */}
+              <Controller
+                control={control}
+                name="phone"
+                rules={{
+                  required: "Telefon raqamni kiriting",
+                  validate: (value) =>
+                    value.replace(/\D/g, "").length === 9 ||
+                    "Telefon raqam 9 ta raqamdan iborat bo'lishi kerak",
+                }}
+                render={({ field: { value, onChange, onBlur } }) => (
+                  <TextInput
+                    autoComplete="tel"
+                    keyboardType="phone-pad"
+                    maxLength={9}
+                    editable={pendingRegistration?.provider !== "phone"}
+                    onBlur={onBlur}
+                    onChangeText={onChange}
+                    placeholder="90 123 45 67"
+                    placeholderTextColor="#A99B90"
+                    className="flex-1 px-[11px] py-3.5 text-[15px] text-[#382319]"
+                    value={value}
+                  />
+                )}
               />
             </View>
           </View>
 
-          <FormField
-            icon={<CalendarDays color="#A05A27" size={20} />}
-            keyboardType="numbers-and-punctuation"
-            label="Tug‘ilgan sana"
-            maxLength={10}
-            onChangeText={setBirthdate}
-            placeholder="KK.OO.YYYY"
-            value={birthdate}
+          {/* Birthday */}
+          <Controller
+            control={control}
+            name="birthdate"
+            rules={{
+              required: "Tug'ilgan sanani tanlang",
+              pattern: {
+                value: /^\d{4}-\d{2}-\d{2}$/,
+                message: "Tug'ilgan sana noto'g'ri",
+              },
+            }}
+            render={({ field: { value, onChange } }) => {
+              const pickerDate = value
+                ? new Date(`${value}T12:00:00`)
+                : new Date(2000, 0, 1, 12);
+              const displayDate = value
+                ? value.split("-").reverse().join(".")
+                : "";
+
+              return (
+                <View className="mb-[17px]">
+                  <Text className="mb-2 text-[13px] font-bold text-[#554137]">
+                    Tug'ilgan sana
+                  </Text>
+                  <Pressable
+                    accessibilityLabel="Tug'ilgan sanani tanlash"
+                    accessibilityRole="button"
+                    className={`min-h-14 flex-row items-center rounded-2xl border-[1.5px] bg-white px-[15px] active:opacity-70 ${
+                      errors.birthdate ? "border-red-500" : "border-[#E6D7CA]"
+                    }`}
+                    onPress={() => setDatePickerVisible(true)}
+                  >
+                    <CalendarDays color="#A05A27" size={20} />
+                    <Text
+                      className={`flex-1 px-[11px] text-[15px] ${
+                        value ? "text-[#382319]" : "text-[#A99B90]"
+                      }`}
+                    >
+                      {displayDate || "Tug'ilgan sanani tanlang"}
+                    </Text>
+                  </Pressable>
+
+                  {datePickerVisible ? (
+                    <DateTimePicker
+                      accentColor="#FF7900"
+                      display="calendar"
+                      locale="uz_UZ"
+                      maximumDate={new Date()}
+                      minimumDate={new Date(1900, 0, 1)}
+                      mode="date"
+                      negativeButton={{ label: "Bekor qilish" }}
+                      onDismiss={() => setDatePickerVisible(false)}
+                      onValueChange={(_, selectedDate) => {
+                        const year = selectedDate.getFullYear();
+                        const month = String(
+                          selectedDate.getMonth() + 1,
+                        ).padStart(2, "0");
+                        const day = String(selectedDate.getDate()).padStart(
+                          2,
+                          "0",
+                        );
+
+                        onChange(`${year}-${month}-${day}`);
+                        setDatePickerVisible(false);
+                      }}
+                      positiveButton={{ label: "Tanlash" }}
+                      presentation="dialog"
+                      value={pickerDate}
+                    />
+                  ) : null}
+                </View>
+              );
+            }}
           />
 
           <View className="flex-row gap-3">
-            <FormField
-              autoCapitalize="words"
-              icon={<MapPin color="#A05A27" size={20} />}
-              label="Viloyat"
-              onChangeText={setRegion}
-              placeholder="Toshkent"
-              value={region}
+            <Controller
+              control={control}
+              name="region"
+              rules={{
+                required: "Viloyatni tanlang",
+              }}
+              render={() => (
+                <View className="mb-[17px] flex-1">
+                  <Text className="mb-2 text-[13px] font-bold text-[#554137]">
+                    Viloyat
+                  </Text>
+                  <Pressable
+                    className="min-h-14 flex-row items-center justify-between rounded-2xl border-[1.5px] border-[#E6D7CA] bg-white px-4 active:opacity-70"
+                    onPress={() => setRegionModalVisible(true)}
+                  >
+                    <Text
+                      className={`flex-1 pr-2 text-[14px] ${
+                        selectedRegion ? "text-[#382319]" : "text-[#A99B90]"
+                      }`}
+                      numberOfLines={1}
+                    >
+                      {selectedRegion?.name.uz ?? "Viloyatni tanlang"}
+                    </Text>
+                    <ChevronDown color="#A05A27" size={18} />
+                  </Pressable>
+                </View>
+              )}
             />
-            <FormField
-              autoCapitalize="words"
-              icon={<Building2 color="#A05A27" size={20} />}
-              label="Tuman"
-              onChangeText={setDistrict}
-              placeholder="Chilonzor"
-              value={district}
+
+            <Controller
+              control={control}
+              name="district"
+              rules={{
+                required: "Tumanni tanlang",
+              }}
+              render={() => (
+                <View className="mb-[17px] flex-1">
+                  <Text className="mb-2 text-[13px] font-bold text-[#554137]">
+                    Tuman
+                  </Text>
+                  <Pressable
+                    className={`min-h-14 flex-row items-center justify-between rounded-2xl border-[1.5px] px-4 active:opacity-70 ${
+                      selectedRegionId
+                        ? "border-[#E6D7CA] bg-white"
+                        : "border-[#EEE5DC] bg-[#F5F1ED]"
+                    }`}
+                    disabled={!selectedRegionId}
+                    onPress={() => setDistrictModalVisible(true)}
+                  >
+                    <Text
+                      className={`flex-1 pr-2 text-[14px] ${
+                        selectedDistrict ? "text-[#382319]" : "text-[#A99B90]"
+                      }`}
+                      numberOfLines={1}
+                    >
+                      {selectedDistrict?.name.uz ??
+                        (selectedRegionId
+                          ? "Tumanni tanlang"
+                          : "Avval viloyat")}
+                    </Text>
+                    <ChevronDown
+                      color={selectedRegionId ? "#A05A27" : "#BEB2A8"}
+                      size={18}
+                    />
+                  </Pressable>
+                </View>
+              )}
             />
           </View>
 
-          <Button title="Ro'yxatdan o'tish" />
+          <LocationSelectModal
+            items={regions}
+            loading={regionsLoading}
+            onClose={() => setRegionModalVisible(false)}
+            onSelect={selectRegion}
+            selectedId={selectedRegionId}
+            title="Viloyatni tanlang"
+            visible={regionModalVisible}
+          />
 
-          <View className="mt-7 flex-row items-center justify-center gap-3">
-            <Link href="/login" asChild>
-              <Pressable className="flex-row items-center gap-2 active:opacity-70">
-                <Text className="text-base font-extrabold text-[#1685E5]">
-                  Kirish
-                </Text>
-                <ArrowRight color="#1685E5" size={18} strokeWidth={2.3} />
-              </Pressable>
-            </Link>
-          </View>
+          <LocationSelectModal
+            items={districts}
+            loading={districtsLoading}
+            onClose={() => setDistrictModalVisible(false)}
+            onSelect={(districtId) =>
+              setValue("district", districtId, { shouldValidate: true })
+            }
+            selectedId={selectedDistrictId}
+            title="Tumanni tanlang"
+            visible={districtModalVisible}
+          />
+
+          <Button
+            title={
+              completeRegistration.isPending
+                ? "Saqlanmoqda..."
+                : "Ro'yxatdan o'tish"
+            }
+            onPress={handleSubmit(handleRegister, handleInvalid)}
+          />
         </View>
       </Container>
     </ImageBackground>

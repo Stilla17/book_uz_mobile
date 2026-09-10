@@ -18,6 +18,8 @@ export default function RootLayout() {
   const setUser = useAuthStore((state) => state.setUser);
   const clearAuth = useAuthStore((state) => state.clearAuth);
   const setLoading = useAuthStore((state) => state.setLoading);
+  const isGuest = useAuthStore((state) => state.isGuest);
+  const canAccessApp = isAuthenticated || isGuest;
 
   useEffect(() => {
     const restoreSession = async () => {
@@ -53,7 +55,7 @@ export default function RootLayout() {
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="index" />
 
-          <Stack.Protected guard={isAuthenticated}>
+          <Stack.Protected guard={canAccessApp}>
             <Stack.Screen name="(tabs)" />
           </Stack.Protected>
 

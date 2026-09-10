@@ -51,7 +51,10 @@ export default function CustomTabBar({
           const Icon = tab.icon;
 
           const onPress = () => {
-            if (route.name === "profile" && !isAuthenticated) {
+            if (
+              (route.name === "profile" || route.name === "library") &&
+              !isAuthenticated
+            ) {
               router.push("/(auth)/auth");
               return;
             }

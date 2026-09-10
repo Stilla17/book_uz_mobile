@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "book_uz_mobile_app",
+    "name": "book_uz",
     "slug": "book_uz_mobile_app",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -16,7 +16,7 @@
         "foregroundImage": "./assets/logo_book_uz.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.anonymous.book_uz_mobile_app"
+      "package": "uz.book"
     },
     "web": {
       "output": "static",
@@ -33,7 +33,13 @@
           "resizeMode": "contain"
         }
       ],
-      "expo-secure-store"
+      "expo-secure-store",
+      [
+        "react-native-nitro-google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.255043206048-phcf2j4hif5285sh9ep4v01fhmhigjv8"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
