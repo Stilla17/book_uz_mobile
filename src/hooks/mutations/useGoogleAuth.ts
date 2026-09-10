@@ -19,7 +19,7 @@ if (!webClientId) {
 
 GoogleOneTapSignIn.configure({
   webClientId,
-  //   autoSelectOnSignIn: false,
+  autoSelectOnSignIn: false,
 });
 
 export const useGoogleAuth = () => {

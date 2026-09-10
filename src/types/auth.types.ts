@@ -122,6 +122,7 @@ export interface CompleteRegistrationPayload {
   name: string;
   phone: string;
   birthDate: string;
+  city: string;
   region: string;
   district: string;
 }

@@ -115,6 +115,7 @@ export default function AuthRegister() {
       name: values.name.trim(),
       phone: `+998${cleanPhone}`,
       birthDate: values.birthdate,
+      city: selectedDistrict.name.uz,
       region: selectedRegion.name.uz,
       district: selectedDistrict.name.uz,
     });
