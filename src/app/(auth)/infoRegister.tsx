@@ -10,13 +10,14 @@ import DateTimePicker from "@expo/ui/community/datetime-picker";
 import { Image } from "expo-image";
 import { Redirect } from "expo-router";
 import {
+  Building,
   CalendarDays,
   ChevronDown,
   Phone,
   UserRound,
 } from "lucide-react-native";
 import { useState } from "react";
-import { Controller, useForm, useWatch } from "react-hook-form";
+import { Controller, FieldErrors, useForm, useWatch } from "react-hook-form";
 import {
   Alert,
   ImageBackground,
@@ -43,6 +44,7 @@ export default function AuthRegister() {
     defaultValues: {
       name: pendingRegistration?.profile.name ?? "",
       phone: initialPhone,
+      city: "",
       birthdate: "",
       region: "",
       district: "",
@@ -66,20 +68,23 @@ export default function AuthRegister() {
   const { data: districts = [], isLoading: districtsLoading } =
     useDistricts(selectedRegionId);
   const selectedRegion = regions.find(
-    (region) => region.id === selectedRegionId,
+    (region) => String(region.id) === String(selectedRegionId),
   );
   const selectedDistrict = districts.find(
-    (district) => district.id === selectedDistrictId,
+    (district) => String(district.id) === String(selectedDistrictId),
   );
 
   const selectRegion = (regionId: string) => {
-    setValue("region", regionId, {
+    setValue("region", String(regionId), {
       shouldValidate: true,
+      shouldDirty: true,
+      shouldTouch: true,
     });
 
     // Region o'zgarsa oldingi district tozalanadi
     setValue("district", "", {
       shouldValidate: true,
+      shouldDirty: true,
     });
   };
 
@@ -89,45 +94,35 @@ export default function AuthRegister() {
 
   const handleRegister = (values: InfoRegistrationForm) => {
     if (!pendingRegistration) {
-      Alert.alert(
-        "Test rejimi",
-        "UI ochildi, lekin registrationToken yo'qligi sabab formani yuborib bo'lmaydi",
-      );
-      return;
-    }
-
-    const selectedRegion = regions.find(
-      (region) => region.id === values.region,
-    );
-
-    const selectedDistrict = districts.find(
-      (district) => district.id === values.district,
-    );
-
-    if (!selectedRegion || !selectedDistrict) {
-      Alert.alert("Xato", "Viloyat va tumanni tanlang");
       return;
     }
 
     const cleanPhone = values.phone.replace(/\D/g, "");
     completeRegistration.mutate({
-      registrationToken: pendingRegistration!.registrationToken,
+      registrationToken: pendingRegistration.registrationToken,
       name: values.name.trim(),
       phone: `+998${cleanPhone}`,
       birthDate: values.birthdate,
-      city: selectedDistrict.name.uz,
-      region: selectedRegion.name.uz,
-      district: selectedDistrict.name.uz,
+      addresses: [
+        {
+          city: values.city.trim(),
+          region: selectedRegion?.name.uz ?? values.region,
+          district: selectedDistrict?.name.uz ?? values.district,
+          street: "",
+          isDefault: true,
+        },
+      ],
     });
   };
 
-  const handleInvalid = () => {
+  const handleInvalid = (formErrors: FieldErrors<InfoRegistrationForm>) => {
     const message =
-      errors.name?.message ||
-      errors.phone?.message ||
-      errors.birthdate?.message ||
-      errors.region?.message ||
-      errors.district?.message ||
+      formErrors.name?.message ||
+      formErrors.phone?.message ||
+      formErrors.birthdate?.message ||
+      formErrors.city?.message ||
+      formErrors.region?.message ||
+      formErrors.district?.message ||
       "Maydonlarni to'g'ri to'ldiring";
 
     Alert.alert("Xato", message);
@@ -294,6 +289,30 @@ export default function AuthRegister() {
             }}
           />
 
+          <Controller
+            control={control}
+            name="city"
+            rules={{
+              required: "Shahringizni kiriting",
+              minLength: {
+                value: 2,
+                message: "Davlat nomi",
+              },
+            }}
+            render={({ field: { value, onChange, onBlur } }) => (
+              <FormField
+                autoCapitalize="words"
+                autoComplete="name"
+                icon={<Building color="#A05A27" size={20} />}
+                label="Shahar"
+                onBlur={onBlur}
+                onChangeText={onChange}
+                placeholder="Masalan, Toshkent"
+                value={value}
+              />
+            )}
+          />
+
           <View className="flex-row gap-3">
             <Controller
               control={control}
@@ -369,7 +388,7 @@ export default function AuthRegister() {
             items={regions}
             loading={regionsLoading}
             onClose={() => setRegionModalVisible(false)}
-            onSelect={selectRegion}
+            onSelect={(regionId) => selectRegion(String(regionId))}
             selectedId={selectedRegionId}
             title="Viloyatni tanlang"
             visible={regionModalVisible}
@@ -380,7 +399,11 @@ export default function AuthRegister() {
             loading={districtsLoading}
             onClose={() => setDistrictModalVisible(false)}
             onSelect={(districtId) =>
-              setValue("district", districtId, { shouldValidate: true })
+              setValue("district", String(districtId), {
+                shouldValidate: true,
+                shouldDirty: true,
+                shouldTouch: true,
+              })
             }
             selectedId={selectedDistrictId}
             title="Tumanni tanlang"

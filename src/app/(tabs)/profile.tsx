@@ -5,6 +5,7 @@ import { profileMenu, stats } from "@/data/profileData";
 import { useLogout } from "@/hooks/mutations/useLogout";
 import { useAuthStore } from "@/store/useAuthStore";
 import { Image } from "expo-image";
+import { router } from "expo-router";
 import {
   ChevronRight,
   Headset,
@@ -32,6 +33,8 @@ export default function Profile() {
   const logout = useLogout();
   const [hide, setHide] = useState(false);
 
+  // console.log("user", JSON.stringify(user, null, 2));
+
   const handleLogout = () => {
     setHide(!hide);
   };
@@ -57,18 +60,31 @@ export default function Profile() {
 
         <Pressable
           accessibilityRole="button"
+          onPress={() => router.push("/settings")}
           className="mt-4 flex-row items-center rounded-3xl border border-[#F5E9DC] bg-white px-4 py-4 active:opacity-80"
           style={cardShadow}
         >
-          <Image
-            source={require("@/assets/images/Avatar.png")}
-            contentFit="cover"
-            style={{
-              width: 75,
-              height: 75,
-              borderRadius: 35,
-            }}
-          />
+          {user?.avatar ? (
+            <Image
+              source={user?.avatar}
+              contentFit="cover"
+              style={{
+                width: 75,
+                height: 75,
+                borderRadius: 35,
+              }}
+            />
+          ) : (
+            <Image
+              source={require("@/assets/images/Avatar.png")}
+              contentFit="cover"
+              style={{
+                width: 75,
+                height: 75,
+                borderRadius: 35,
+              }}
+            />
+          )}
 
           <View className="ml-4 flex-1">
             <Text className="text-[16px] font-bold" style={{ color: TEXT }}>

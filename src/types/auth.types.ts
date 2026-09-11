@@ -15,6 +15,16 @@ export interface User {
   name: string;
   phone: string;
   image: string;
+  avatar: string;
+  email: string;
+  birthDate: string;
+  addresses: Array<{
+    city: string;
+    region: string;
+    district: string;
+    street: string;
+    isDefault: boolean;
+  }>;
 }
 
 export interface AuthToken {
@@ -122,7 +132,11 @@ export interface CompleteRegistrationPayload {
   name: string;
   phone: string;
   birthDate: string;
-  city: string;
-  region: string;
-  district: string;
+  addresses: Array<{
+    city: string;
+    region: string;
+    district: string;
+    street: string;
+    isDefault: boolean;
+  }>;
 }

@@ -44,11 +44,7 @@ export default function Auth() {
         <Button title="Telefon raqam" isActive={false} href={"/(auth)/login"}>
           <MessageSquareText color={"white"} size={20} />
         </Button>
-        <Button
-          title={googleAuth.isPending ? "Kutilmoqda" : "Google"}
-          isActive={false}
-          onPress={googleAuth.signIn}
-        >
+        <Button title="Google" isActive={false} onPress={googleAuth.signIn}>
           <Image
             source={require("./../../../assets/logo_google.png")}
             style={{ width: 20, height: 20 }}

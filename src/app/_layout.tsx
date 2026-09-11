@@ -59,6 +59,10 @@ export default function RootLayout() {
             <Stack.Screen name="(tabs)" />
           </Stack.Protected>
 
+          <Stack.Protected guard={isAuthenticated}>
+            <Stack.Screen name="settings" />
+          </Stack.Protected>
+
           <Stack.Protected guard={!isAuthenticated}>
             <Stack.Screen name="(auth)" />
           </Stack.Protected>

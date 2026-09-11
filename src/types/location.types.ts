@@ -27,6 +27,7 @@ export type InfoRegistrationForm = {
   birthdate: string;
   region: string;
   district: string;
+  city: string;
 };
 
 export type LocationOption = {
