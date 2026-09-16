@@ -44,6 +44,7 @@ export type AuthState = {
   setUser: (user: User | null) => void;
   setLoading: (value: boolean) => void;
   clearAuth: () => void;
+  updateUser: (data: Partial<User>) => void;
 };
 
 // Auth OTP

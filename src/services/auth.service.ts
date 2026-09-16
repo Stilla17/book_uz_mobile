@@ -87,6 +87,18 @@ export const authService = {
       response.data
     );
   },
+
+  updateProfile: async (payload: {
+    name?: string;
+    email?: string;
+    phone?: string;
+    formData?: FormData;
+    birthDate?: string;
+  }) => {
+    const response = await api.patch("/users/profile", payload);
+    return response.data;
+  },
+
   googleLogin: async (idToken: string): Promise<AuthFlowData> => {
     const response = await api.post<ApiResponse<AuthFlowData>>(
       "/auth/mobile/google",

@@ -1,6 +1,6 @@
 import { CardProps } from "@/types/props.types";
 import { Image } from "expo-image";
-import { BookOpen, Eye, Headphones, Bookmark, Star } from "lucide-react-native";
+import { Bookmark, BookOpen, Eye, Headphones, Star } from "lucide-react-native";
 import { Text, View } from "react-native";
 
 export default function Card({
@@ -14,27 +14,22 @@ export default function Card({
   return (
     <View className="w-full p-4 bg-white rounded-3xl">
       <View className="flex-row gap-4 relative ">
-        <View className="w-full overflow-hidden bg-slate-100">
-          {image ? (
-            <View
-              className="overflow-hidden bg-slate-100"
-              style={{ width: "100%", aspectRatio: "0.65" }}
-            >
-              <Image
-                source={image}
-                style={{ width: "100%", height: "100%" }}
-                contentFit="cover"
-              />
-            </View>
-          ) : (
-            <View className="flex-1 w-full items-center justify-center bg-slate-100 px-4">
-              <BookOpen color="#94A3B8" size={38} strokeWidth={1.6} />
-              <Text className="mt-2 text-center text-xs text-slate-400">
-                Muqova rasmi
-              </Text>
-            </View>
-          )}
-        </View>
+        {image ? (
+          <View className="overflow-hidden m-auto" style={{ width: "100%" }}>
+            <Image
+              source={image}
+              style={{ width: "100%", height: 170, borderRadius: 20 }}
+              contentFit="contain"
+            />
+          </View>
+        ) : (
+          <View className="flex-1 w-full items-center justify-center bg-slate-100 px-4">
+            <BookOpen color="#94A3B8" size={38} strokeWidth={1.6} />
+            <Text className="mt-2 text-center text-xs text-slate-400">
+              Muqova rasmi
+            </Text>
+          </View>
+        )}
 
         {discount ? (
           <View className="self-start rounded-xl bg-[#FF5C63] outline-2 outline-red-600 px-2.5 py-1 absolute">
@@ -61,11 +56,11 @@ export default function Card({
       </View>
 
       {/* <View className="mt-4 mb-2 h-px bg-slate-200" /> */}
-      <View className="mt-3">
+      <View>
         <Text
           numberOfLines={1}
           ellipsizeMode="tail"
-          className="text-[16px] font-bold leading-7 text-slate-950 leading-7"
+          className="text-[16px] font-bold leading-7 text-slate-950 "
         >
           {title}
         </Text>

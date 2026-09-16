@@ -16,11 +16,11 @@ import {
 import { useState } from "react";
 import { Pressable, StatusBar, Text, View, type ViewStyle } from "react-native";
 
-const ORANGE = "#FF7900";
-const TEXT = "#302A26";
-const MUTED = "#867A72";
+export const ORANGE = "#FF7900";
+export const TEXT = "#302A26";
+export const MUTED = "#867A72";
 
-const cardShadow: ViewStyle = {
+export const cardShadow: ViewStyle = {
   shadowColor: "#8A4B13",
   shadowOffset: { width: 0, height: 5 },
   shadowOpacity: 0.08,
