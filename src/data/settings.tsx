@@ -1,8 +1,12 @@
 import { User } from "@/types/auth.types";
-import { FieldConfig, FieldKey } from "@/types/settings";
+import { FieldConfig } from "@/types/settings";
 
 export function getFieldConfig(user: User | null): FieldConfig {
+  const address = user?.addresses?.find((item) => item.isDefault) ?? user?.addresses?.[0];
   return {
+    region: { label: "Viloyat", value: address?.region ?? "" },
+    district: { label: "Tuman", value: address?.district ?? "" },
+    city: { label: "Shahar", value: address?.city ?? "" },
     name: {
       label: "Ism va familiya",
       value: user?.name ?? "",

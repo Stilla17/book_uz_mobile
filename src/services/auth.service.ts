@@ -11,6 +11,7 @@ import {
   SendOtpPayload,
   SendOtpResponse,
   VerifyOtpPayload,
+  User,
 } from "@/types/auth.types";
 import { normalizeAuthResponse } from "@/utils/authResponse";
 
@@ -94,8 +95,10 @@ export const authService = {
     phone?: string;
     formData?: FormData;
     birthDate?: string;
+    addresses?: User["addresses"];
   }) => {
     const response = await api.patch("/users/profile", payload);
+    console.log("API manzili:", api.defaults.baseURL);
     return response.data;
   },
 

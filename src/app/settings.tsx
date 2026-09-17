@@ -2,6 +2,9 @@ import Container from "@/components/Container";
 import { EditFieldModal } from "@/components/other/EditFieldModal";
 import { InfoField } from "@/components/other/InfoField";
 import { ProfileAvatar } from "@/components/sections/ProfileAvatar";
+import { getFieldConfig } from "@/data/settings";
+import { useUpdateProfile } from "@/hooks/mutations/useUpdateProfile";
+import { useDistricts, useRegions } from "@/hooks/queries/useLocation";
 import { useAuthStore } from "@/store/useAuthStore";
 import { FieldKey } from "@/types/settings";
 import { router } from "expo-router";
@@ -16,8 +19,6 @@ import {
 import { useState } from "react";
 import { Alert, Pressable, StatusBar, Text, View } from "react-native";
 import { cardShadow, MUTED, ORANGE, TEXT } from "./(tabs)/profile";
-import { getFieldConfig } from "@/data/settings";
-import { useUpdateProfile } from "@/hooks/mutations/useUpdateProfile";
 
 export default function Settings() {
   const user = useAuthStore((state) => state.user);
@@ -27,22 +28,55 @@ export default function Settings() {
 
   const address =
     user?.addresses?.find((item) => item.isDefault) ?? user?.addresses?.[0];
+  const regionsQuery = useRegions();
+  const regions = regionsQuery.data ?? [];
+  const selectedRegion = regions.find(
+    (item) =>
+      item.name.uz === address?.region || String(item.id) === address?.region,
+  );
+  const districtsQuery = useDistricts(selectedRegion?.id);
   const formattedBirthDate = user?.birthDate
     ? new Date(user.birthDate).toLocaleDateString("ru-RU")
     : "Tug'ilgan sana tanlanmagan";
   const [editingField, setEditingField] = useState<FieldKey | null>(null);
 
   const handleSave = (field: FieldKey, value: string) => {
-    updateUser({ [field]: value });
+    if (!user) return;
+
+    if (field === "region" || field === "district" || field === "city") {
+      const addresses = [...(user.addresses ?? [])];
+      const defaultIndex = addresses.findIndex((item) => item.isDefault);
+      const index = defaultIndex >= 0 ? defaultIndex : 0;
+      const currentAddress = addresses[index] ?? {
+        region: "",
+        district: "",
+        city: "",
+        street: "",
+        isDefault: true,
+      };
+      addresses[index] = { ...currentAddress, [field]: value.trim() };
+      if (field === "region" && currentAddress.region !== value.trim()) {
+        addresses[index].district = "";
+      }
+      updateUser({ addresses });
+    } else {
+      updateUser({ [field]: value });
+    }
     setEditingField(null);
   };
 
   const handleSaveProfile = () => {
     if (!user || isPending) return;
-    const { name, phone, email, birthDate } = user;
+    const { name, phone, email, birthDate, addresses } = user;
     console.log("Yuborilayotgan birthDate:", birthDate);
     mutate(
-      { name, phone, email, birthDate },
+      {
+        name,
+        phone,
+        email,
+        birthDate: birthDate?.slice(0, 10) || undefined,
+        addresses,
+      },
       {
         onSuccess: () => {
           router.back();
@@ -161,15 +195,18 @@ export default function Settings() {
                 icon={<MapPin color={ORANGE} size={18} strokeWidth={1.8} />}
                 label="Viloyat"
                 value={address?.region || "Viloyat tanlanmagan"}
+                onEdit={() => setEditingField("region")}
               />
               <InfoField
                 icon={<MapPin color={ORANGE} size={18} strokeWidth={1.8} />}
                 label="Tuman"
                 value={address?.district || "Tuman tanlanmagan"}
+                onEdit={() => setEditingField("district")}
               />
               <InfoField
                 icon={<MapPin color={ORANGE} size={18} strokeWidth={1.8} />}
-                label="Shahar"
+                label="Davlat"
+                onEdit={() => setEditingField("city")}
                 value={
                   [address?.city].filter(Boolean).join(", ") ||
                   "Manzil kiritilmagan"
@@ -195,7 +232,39 @@ export default function Settings() {
       {editingField && (
         <EditFieldModal
           visible={!!editingField}
-          type={editingField === "birthDate" ? "date" : "text"}
+          type={
+            editingField === "birthDate"
+              ? "date"
+              : editingField === "region" || editingField === "district"
+                ? "select"
+                : "text"
+          }
+          items={
+            editingField === "region" ? regions : (districtsQuery.data ?? [])
+          }
+          loading={
+            editingField === "region"
+              ? regionsQuery.isLoading
+              : districtsQuery.isLoading
+          }
+          selectionDisabled={editingField === "district" && !selectedRegion}
+          selectionPlaceholder={
+            editingField === "region"
+              ? "Viloyatni tanlang"
+              : selectedRegion
+                ? "Tumanni tanlang"
+                : "Avval viloyatni tanlang"
+          }
+          selectionError={
+            editingField === "region"
+              ? regionsQuery.isError
+              : districtsQuery.isError
+          }
+          onRetry={() => {
+            void (editingField === "region"
+              ? regionsQuery.refetch()
+              : districtsQuery.refetch());
+          }}
           label={fieldConfig[editingField].label}
           value={fieldConfig[editingField].value}
           keyboardType={fieldConfig[editingField].keyboardType}
