@@ -1,3 +1,4 @@
+import { showAlert } from "@/store/useAlertStore";
 import Container from "@/components/Container";
 import { EditFieldModal } from "@/components/other/EditFieldModal";
 import { InfoField } from "@/components/other/InfoField";
@@ -17,7 +18,7 @@ import {
   UserRound,
 } from "lucide-react-native";
 import { useState } from "react";
-import { Alert, Pressable, StatusBar, Text, View } from "react-native";
+import { Pressable, StatusBar, Text, View } from "react-native";
 import { cardShadow, MUTED, ORANGE, TEXT } from "./(tabs)/profile";
 
 export default function Settings() {
@@ -82,7 +83,7 @@ export default function Settings() {
           router.back();
         },
         onError: () => {
-          Alert.alert(
+          showAlert(
             "Xatolik",
             "Ma'lumotlar saqlanmadi. Qayta urinib ko'ring.",
           );

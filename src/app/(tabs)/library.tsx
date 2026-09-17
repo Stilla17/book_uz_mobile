@@ -1,3 +1,4 @@
+import { showAlert } from "@/store/useAlertStore";
 import { LinearGradient } from "expo-linear-gradient";
 import {
   BookOpen,
@@ -9,15 +10,7 @@ import {
   X,
 } from "lucide-react-native";
 import { useCallback, useMemo, useRef, useState } from "react";
-import {
-  Alert,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import {
   Gesture,
   GestureDetector,
@@ -294,7 +287,7 @@ export default function LibraryScreen() {
 
   const requestDeleteShelf = (shelfId: string, label: string) => {
     if (shelfList.length === 1) {
-      Alert.alert(
+      showAlert(
         "Javonni o‘chirib bo‘lmaydi",
         "Kutubxonada kamida bitta javon qolishi kerak.",
       );
@@ -302,14 +295,14 @@ export default function LibraryScreen() {
     }
 
     if (shelves[shelfId].length > 0) {
-      Alert.alert(
+      showAlert(
         "Javon bo‘sh emas",
         "Avval kitoblarni boshqa javonga ko‘chiring, keyin javonni o‘chiring.",
       );
       return;
     }
 
-    Alert.alert(
+    showAlert(
       "Javonni o‘chirish",
       `“${label}” javonini o‘chirishni xohlaysizmi?`,
       [

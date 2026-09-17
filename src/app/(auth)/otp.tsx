@@ -1,3 +1,4 @@
+import { showAlert } from "@/store/useAlertStore";
 import Container from "@/components/Container";
 import Button from "@/components/other/Button";
 import { useResend } from "@/hooks/mutations/useResend";
@@ -10,14 +11,7 @@ import { Image } from "expo-image";
 import { router, useLocalSearchParams } from "expo-router";
 import { ArrowLeft, MessageSquareText } from "lucide-react-native";
 import { Controller, useForm } from "react-hook-form";
-import {
-  Alert,
-  ImageBackground,
-  Pressable,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
+import { ImageBackground, Pressable, Text, TextInput, View } from "react-native";
 
 const OTP_LENGTH = 4;
 
@@ -39,12 +33,12 @@ export default function OtpScreen() {
     const otpCode = code.join("");
 
     if (!phone) {
-      Alert.alert("Xato", "Telefon raqami topilmadi. Qaytadan urinib ko'ring");
+      showAlert("Xato", "Telefon raqami topilmadi. Qaytadan urinib ko'ring");
       return;
     }
 
     if (otpCode.length !== OTP_LENGTH) {
-      Alert.alert("Xato", "4 xonali kodni kiriting");
+      showAlert("Xato", "4 xonali kodni kiriting");
       return;
     }
 
@@ -56,7 +50,7 @@ export default function OtpScreen() {
 
   const handleResend = () => {
     if (!phone) {
-      Alert.alert("Xato", "Telefon raqami topilmadi. Qaytadan urinib ko'ring");
+      showAlert("Xato", "Telefon raqami topilmadi. Qaytadan urinib ko'ring");
       return;
     }
 

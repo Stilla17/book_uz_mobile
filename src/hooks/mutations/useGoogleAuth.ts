@@ -1,9 +1,10 @@
+import { showAlert } from "@/store/useAlertStore";
 import { authService } from "@/services/auth.service";
 import { ApiErrorResponse } from "@/types/auth.types";
 import { handleAuthResult } from "@/utils/handleAuthResult";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
-import { Alert } from "react-native";
+
 import {
   GoogleOneTapSignIn,
   useGoogleSignInFromButton,
@@ -35,7 +36,7 @@ export const useGoogleAuth = () => {
           ? error.message
           : "Google orqali kirishda xatolik yuz berdi";
 
-      Alert.alert("Xato", message);
+      showAlert("Xato", message);
     },
   });
   const googleSignIn = useGoogleSignInFromButton({
@@ -50,7 +51,7 @@ export const useGoogleAuth = () => {
           ? error.message
           : "Google oynasini ochib bo'lmadi";
 
-      Alert.alert("Xato", message);
+      showAlert("Xato", message);
     },
   });
   const signIn = () => {

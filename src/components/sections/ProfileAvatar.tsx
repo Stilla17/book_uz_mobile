@@ -1,14 +1,17 @@
+import { showAlert } from "@/store/useAlertStore";
 import { cardShadow } from "@/app/(tabs)/profile";
+import { useUpdateProfile } from "@/hooks/mutations/useUpdateProfile";
 import { useAuthStore } from "@/store/useAuthStore";
-import { Image, ImageBackground } from "expo-image";
 import { requireOptionalNativeModule } from "expo";
+import { Image, ImageBackground } from "expo-image";
 import { Camera } from "lucide-react-native";
 import { useState } from "react";
-import { Alert, Platform, Pressable, View } from "react-native";
+import { Platform, Pressable, View } from "react-native";
 
 export function ProfileAvatar() {
   const user = useAuthStore((state) => state.user);
   const updateUser = useAuthStore((state) => state.updateUser);
+  const { mutateAsync, isPending } = useUpdateProfile();
   const [isPicking, setIsPicking] = useState(false);
 
   const pickImage = async () => {
@@ -17,7 +20,7 @@ export function ProfileAvatar() {
       Platform.OS !== "web" &&
       !requireOptionalNativeModule("ExponentImagePicker")
     ) {
-      Alert.alert(
+      showAlert(
         "Rasm tanlash mavjud emas",
         "Hozirgi ilovada rasm tanlash moduli mavjud emas. SDK 57 ga mos Expo Go yoki yangi development build orqali oching.",
       );
@@ -38,10 +41,23 @@ export function ProfileAvatar() {
 
       const image = result.assets[0];
       if (image?.uri) {
-        updateUser({ avatar: image.uri, image: image.uri });
+        const formData = new FormData();
+
+        formData.append("avatar", {
+          uri: image.uri,
+          name: image.fileName || "avatar.jpg",
+          type: image.mimeType || "image/jpeg",
+        } as unknown as Blob);
+
+        const response = await mutateAsync({ formData });
+
+        updateUser({
+          avatar: response.data.avatar,
+          image: response.data.avatar,
+        });
       }
     } catch {
-      Alert.alert("Xato", "Rasmni tanlab bo'lmadi. Qayta urinib ko'ring.");
+      showAlert("Xato", "Rasmni tanlab bo'lmadi. Qayta urinib ko'ring.");
     } finally {
       setIsPicking(false);
     }
@@ -81,7 +97,7 @@ export function ProfileAvatar() {
             accessibilityLabel="Profil rasmini o‘zgartirish"
             hitSlop={8}
             onPress={pickImage}
-            disabled={isPicking}
+            disabled={isPicking || isPending}
             className="absolute bottom-0 right-0 h-9 w-9 items-center justify-center rounded-full border-[3px] border-white bg-[#FF7900]"
           >
             <Camera color="white" size={16} strokeWidth={2.2} />

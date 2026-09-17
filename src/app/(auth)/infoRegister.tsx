@@ -1,3 +1,4 @@
+import { showAlert } from "@/store/useAlertStore";
 import Container from "@/components/Container";
 import Button from "@/components/other/Button";
 import FormField from "@/components/other/FormField";
@@ -18,14 +19,7 @@ import {
 } from "lucide-react-native";
 import { useState } from "react";
 import { Controller, FieldErrors, useForm, useWatch } from "react-hook-form";
-import {
-  Alert,
-  ImageBackground,
-  Pressable,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
+import { ImageBackground, Pressable, Text, TextInput, View } from "react-native";
 
 export default function AuthRegister() {
   const pendingRegistration = useAuthStore(
@@ -125,7 +119,7 @@ export default function AuthRegister() {
       formErrors.district?.message ||
       "Maydonlarni to'g'ri to'ldiring";
 
-    Alert.alert("Xato", message);
+    showAlert("Xato", message);
   };
 
   return (

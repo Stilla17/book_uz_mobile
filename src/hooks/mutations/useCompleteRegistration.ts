@@ -1,3 +1,4 @@
+import { showAlert } from "@/store/useAlertStore";
 import { authService } from "@/services/auth.service";
 import { authStorage } from "@/storage/auth.storage";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -5,7 +6,7 @@ import { ApiErrorResponse } from "@/types/auth.types";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { router } from "expo-router";
-import { Alert } from "react-native";
+
 
 export const useCompleteRegistration = () => {
   const setUser = useAuthStore((state) => state.setUser);
@@ -31,7 +32,7 @@ export const useCompleteRegistration = () => {
           ? error.message
           : "Ro'yxatdan o'tishda xatolik yuz berdi";
 
-      Alert.alert("Xato", message);
+      showAlert("Xato", message);
     },
   });
 };

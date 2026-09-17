@@ -1,4 +1,5 @@
 import "@/app/global.css";
+import AlertModalHost from "@/components/other/AlertModalHost";
 import { authService } from "@/services/auth.service";
 import { authStorage } from "@/storage/auth.storage";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -67,6 +68,7 @@ export default function RootLayout() {
             <Stack.Screen name="(auth)" />
           </Stack.Protected>
         </Stack>
+        <AlertModalHost />
       </QueryClientProvider>
     </GestureHandlerRootView>
   );

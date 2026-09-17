@@ -1,8 +1,9 @@
+import { showAlert } from "@/store/useAlertStore";
 import { authService } from "@/services/auth.service";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { router } from "expo-router";
-import { Alert } from "react-native";
+
 
 type ApiErrorResponse = {
   message?: string;
@@ -44,7 +45,7 @@ export const useOtp = () => {
         response: responseData,
       });
 
-      Alert.alert("Xato", message);
+      showAlert("Xato", message);
     },
   });
 };

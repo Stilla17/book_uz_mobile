@@ -97,8 +97,17 @@ export const authService = {
     birthDate?: string;
     addresses?: User["addresses"];
   }) => {
-    const response = await api.patch("/users/profile", payload);
-    console.log("API manzili:", api.defaults.baseURL);
+    const { formData, ...profileData } = payload;
+    const response = await api.patch(
+      "/users/profile",
+      formData ?? profileData,
+      formData
+        ? {
+            headers: { "Content-Type": "multipart/form-data" },
+            timeout: 30000,
+          }
+        : undefined,
+    );
     return response.data;
   },
 

@@ -1,3 +1,4 @@
+import { showAlert } from "@/store/useAlertStore";
 import Container from "@/components/Container";
 import Button from "@/components/other/Button";
 import { useOtp } from "@/hooks/mutations/useOtp";
@@ -6,14 +7,7 @@ import { Image } from "expo-image";
 import { router } from "expo-router";
 import { ArrowLeft, Phone } from "lucide-react-native";
 import { Controller, useForm } from "react-hook-form";
-import {
-  Alert,
-  ImageBackground,
-  Pressable,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
+import { ImageBackground, Pressable, Text, TextInput, View } from "react-native";
 
 export default function AuthLogin() {
   const { control, handleSubmit } = useForm<SendOtpPayload>({
@@ -27,7 +21,7 @@ export default function AuthLogin() {
     const cleanPhone = data.phone.replace(/\D/g, "");
 
     if (cleanPhone.length !== 9) {
-      Alert.alert("Xato", "Telefon raqamni to'liq kiriting");
+      showAlert("Xato", "Telefon raqamni to'liq kiriting");
       return;
     }
 
